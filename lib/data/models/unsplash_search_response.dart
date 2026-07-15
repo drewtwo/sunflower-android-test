@@ -14,8 +14,21 @@
 
 /// Data transfer object for the Unsplash photo search response.
 ///
-/// Mirrors the Android `data/UnsplashSearchResponse.kt` data class.
-/// Uses [json_serializable] for JSON deserialization.
+/// Mirrors the Android `data/UnsplashSearchResponse.kt` data class:
+/// ```kotlin
+/// data class UnsplashSearchResponse(
+///   val results: List<UnsplashPhoto>,
+///   @SerializedName("total_pages") val totalPages: Int
+/// )
+/// ```
+///
+/// Uses [json_serializable] for JSON deserialization. The `@JsonKey` annotation
+/// maps the snake_case JSON field `total_pages` to the camelCase Dart field
+/// [totalPages], replacing Android's `@SerializedName("total_pages")`.
+///
+/// ## Code generation
+/// Run `flutter pub run build_runner build --delete-conflicting-outputs`
+/// to regenerate `unsplash_search_response.g.dart`.
 library;
 
 import 'package:json_annotation/json_annotation.dart';
@@ -28,6 +41,15 @@ part 'unsplash_search_response.g.dart';
 /// Not all fields returned from the API are represented here; only those used
 /// in this project are listed. For a full list of fields, consult the API
 /// documentation: https://unsplash.com/documentation#search-photos
+///
+/// Example JSON:
+/// ```json
+/// {
+///   "results": [...],
+///   "total": 133,
+///   "total_pages": 6
+/// }
+/// ```
 @JsonSerializable(createToJson: false)
 class UnsplashSearchResponse {
   /// Creates an [UnsplashSearchResponse] instance.
@@ -44,6 +66,8 @@ class UnsplashSearchResponse {
   final List<UnsplashPhoto> results;
 
   /// The total number of pages available for this query.
+  ///
+  /// Mirrors `@SerializedName("total_pages") val totalPages: Int`.
   @JsonKey(name: 'total_pages')
   final int totalPages;
 }
