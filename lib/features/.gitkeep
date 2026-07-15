@@ -1,0 +1,7 @@
+# This directory contains feature modules.
+# Each subdirectory represents a self-contained feature slice:
+#   plant_list/   — Browse all plants
+#   plant_detail/ — View a single plant's details
+#   garden/       — My Garden (planted items)
+#   gallery/      — Unsplash photo gallery
+#   home/         — Bottom-navigation host shell
