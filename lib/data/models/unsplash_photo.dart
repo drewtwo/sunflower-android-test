@@ -12,11 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Data transfer object for a single Unsplash photo.
+/// Data transfer objects for the Unsplash API.
 ///
-/// Mirrors the Android `data/UnsplashPhoto.kt` and `data/UnsplashPhotoUrls.kt`
-/// and `data/UnsplashUser.kt` data classes. Uses [json_serializable] for
-/// JSON deserialization (replacing Android's Gson `@SerializedName`).
+/// This file consolidates three Android files into one:
+/// - `data/UnsplashPhoto.kt`     → [UnsplashPhoto]
+/// - `data/UnsplashPhotoUrls.kt` → [UnsplashPhotoUrls]
+/// - `data/UnsplashUser.kt`      → [UnsplashUser]
+///
+/// Uses [json_serializable] for JSON deserialization, replacing Android's
+/// Gson `@SerializedName` annotations. The `@JsonKey(name: ...)` annotation
+/// is used where the JSON field name differs from the Dart field name.
+///
+/// ## Code generation
+/// Run `flutter pub run build_runner build --delete-conflicting-outputs`
+/// to regenerate `unsplash_photo.g.dart`.
 library;
 
 import 'package:json_annotation/json_annotation.dart';
@@ -29,7 +38,11 @@ part 'unsplash_photo.g.dart';
 
 /// The set of image URLs returned for a single Unsplash photo.
 ///
-/// Mirrors `data/UnsplashPhotoUrls.kt`.
+/// Mirrors `data/UnsplashPhotoUrls.kt`:
+/// ```kotlin
+/// data class UnsplashPhotoUrls(val raw: String, val full: String,
+///   val regular: String, val small: String, val thumb: String)
+/// ```
 @JsonSerializable(createToJson: false)
 class UnsplashPhotoUrls {
   /// Creates an [UnsplashPhotoUrls] instance.
@@ -67,7 +80,12 @@ class UnsplashPhotoUrls {
 
 /// Represents the photographer who uploaded the photo.
 ///
-/// Mirrors `data/UnsplashUser.kt`.
+/// Mirrors `data/UnsplashUser.kt`:
+/// ```kotlin
+/// data class UnsplashUser(val name: String, val username: String) {
+///   val attributionUrl get() = "https://unsplash.com/$username?..."
+/// }
+/// ```
 @JsonSerializable(createToJson: false)
 class UnsplashUser {
   /// Creates an [UnsplashUser] instance.
@@ -87,6 +105,9 @@ class UnsplashUser {
   final String username;
 
   /// The Unsplash attribution URL for this photographer.
+  ///
+  /// Mirrors `val attributionUrl get() = "https://unsplash.com/$username?..."`.
+  /// The UTM parameters are required by the Unsplash API guidelines.
   String get attributionUrl =>
       'https://unsplash.com/$username?utm_source=sunflower&utm_medium=referral';
 }
@@ -101,6 +122,13 @@ class UnsplashUser {
 /// only those used in this project are listed. For a full list of fields,
 /// consult the Unsplash API documentation:
 /// https://unsplash.com/documentation#get-a-photo
+///
+/// ## Android → Dart mapping
+/// | Android (Gson)                    | Dart (json_serializable)            |
+/// |-----------------------------------|-------------------------------------|
+/// | `@SerializedName("id")`           | field name matches JSON key          |
+/// | `@SerializedName("urls")`         | field name matches JSON key          |
+/// | `@SerializedName("user")`         | field name matches JSON key          |
 @JsonSerializable(createToJson: false)
 class UnsplashPhoto {
   /// Creates an [UnsplashPhoto] instance.
