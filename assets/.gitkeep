@@ -1,0 +1,6 @@
+# This directory holds static assets bundled with the Flutter app.
+#
+# assets/
+#   plants.json     — seed data for the local database (copied from Android)
+#   images/         — placeholder for local image assets
+#   fonts/          — custom font files (Lato)
