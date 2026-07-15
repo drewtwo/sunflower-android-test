@@ -21,6 +21,14 @@
 /// - Logging interceptor (debug builds only).
 /// - Error-handling interceptor that maps HTTP errors to typed exceptions.
 /// - Timeout configuration from [AppConstants].
+///
+/// ## Android → Dart mapping
+/// | Android                           | Dart                                |
+/// |-----------------------------------|-------------------------------------|
+/// | Retrofit `@GET("search/photos")`  | `dio.get(unsplashSearchPhotosPath)` |
+/// | OkHttp `HttpLoggingInterceptor`   | dio `LogInterceptor`                |
+/// | Hilt `@Provides @Singleton Retrofit` | `createUnsplashDio()` singleton  |
+/// | `@Query("query")` parameter       | `queryParameters: {'query': ...}`   |
 library;
 
 import 'package:dio/dio.dart';
@@ -32,6 +40,9 @@ import 'package:sunflower_flutter/data/models/unsplash_search_response.dart';
 // ---------------------------------------------------------------------------
 
 /// Thrown when the Unsplash API returns a non-2xx HTTP response.
+///
+/// Mirrors the HTTP error handling that Retrofit provides automatically
+/// in the Android implementation.
 class UnsplashApiException implements Exception {
   /// Creates an [UnsplashApiException].
   const UnsplashApiException({
@@ -66,6 +77,10 @@ class NetworkException implements Exception {
 // ---------------------------------------------------------------------------
 
 /// A Dio interceptor that converts [DioException]s into typed exceptions.
+///
+/// Mirrors the error handling that Retrofit + OkHttp provide in the Android
+/// implementation, where HTTP errors are automatically converted to
+/// `HttpException` instances.
 class _ErrorInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
@@ -113,6 +128,9 @@ class _ErrorInterceptor extends Interceptor {
 /// - A [LogInterceptor] for request/response logging.
 /// - An [_ErrorInterceptor] for typed error handling.
 ///
+/// Mirrors the Hilt `@Provides @Singleton` method in `NetworkModule.kt`
+/// that creates the Retrofit instance.
+///
 /// Example:
 /// ```dart
 /// final dio = createUnsplashDio();
@@ -133,6 +151,7 @@ Dio createUnsplashDio() {
   );
 
   // Logging interceptor — mirrors OkHttp HttpLoggingInterceptor(Level.BASIC).
+  // Logs request URL and response status code for debugging.
   dio.interceptors.add(
     LogInterceptor(
       requestBody: false,
@@ -144,7 +163,7 @@ Dio createUnsplashDio() {
     ),
   );
 
-  // Error-handling interceptor.
+  // Error-handling interceptor — converts DioExceptions to typed exceptions.
   dio.interceptors.add(_ErrorInterceptor());
 
   return dio;
@@ -156,8 +175,28 @@ Dio createUnsplashDio() {
 
 /// A typed HTTP client for the Unsplash REST API.
 ///
-/// Mirrors the Android `UnsplashService` Retrofit interface. All methods
-/// are `async` and return deserialized Dart objects.
+/// Mirrors the Android `UnsplashService` Retrofit interface defined in
+/// `api/UnsplashService.kt`. All methods are `async` and return deserialized
+/// Dart objects.
+///
+/// ## Android → Dart mapping
+/// ```kotlin
+/// // Android (Retrofit)
+/// @GET("search/photos")
+/// suspend fun searchPhotos(
+///   @Query("query") query: String,
+///   @Query("page") page: Int,
+///   @Query("per_page") perPage: Int,
+///   @Query("client_id") clientId: String
+/// ): UnsplashSearchResponse
+/// ```
+/// ```dart
+/// // Dart (dio)
+/// Future<UnsplashSearchResponse> searchPhotos({...}) async {
+///   final response = await _dio.get(unsplashSearchPhotosPath, queryParameters: {...});
+///   return UnsplashSearchResponse.fromJson(response.data);
+/// }
+/// ```
 class UnsplashClient {
   /// Creates an [UnsplashClient] using the provided [_dio] instance.
   ///
