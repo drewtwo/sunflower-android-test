@@ -43,7 +43,6 @@ import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sunflower_flutter/app/app.dart';
 import 'package:sunflower_flutter/core/theme/app_theme.dart';
 import 'package:sunflower_flutter/data/datasources/app_database.dart';
 import 'package:sunflower_flutter/data/models/garden_planting.dart';
@@ -61,6 +60,8 @@ abstract final class TestUtils {
   ///
   /// The database is empty (no seed data). Use [insertTestPlants] to
   /// populate it with test fixtures.
+  ///
+  /// Mirrors `Room.inMemoryDatabaseBuilder(context, AppDatabase::class).build()`.
   static AppDatabase createInMemoryDatabase() =>
       AppDatabase.forTesting(NativeDatabase.memory());
 
@@ -85,9 +86,9 @@ abstract final class TestUtils {
 
 /// Pre-built [PlantsCompanion] fixtures for use in tests.
 ///
-/// Mirrors the `plants.json` seed data used in Android tests.
+/// Mirrors the `testPlants` list in the Android `TestUtils.kt`.
 abstract final class PlantFixtures {
-  /// A sunflower plant fixture.
+  /// A sunflower plant fixture (grow zone 9, watering interval 7).
   static final PlantsCompanion sunflower = PlantsCompanion.insert(
     id: 'sunflower',
     name: 'Sunflower',
@@ -97,7 +98,7 @@ abstract final class PlantFixtures {
     imageUrl: const Value('https://example.com/sunflower.jpg'),
   );
 
-  /// An apple tree plant fixture.
+  /// An apple tree plant fixture (grow zone 5, watering interval 3).
   static final PlantsCompanion apple = PlantsCompanion.insert(
     id: 'apple',
     name: 'Apple',
@@ -107,7 +108,7 @@ abstract final class PlantFixtures {
     imageUrl: const Value('https://example.com/apple.jpg'),
   );
 
-  /// A beet plant fixture.
+  /// A beet plant fixture (grow zone 7, watering interval 5).
   static final PlantsCompanion beet = PlantsCompanion.insert(
     id: 'beet',
     name: 'Beet',
@@ -117,8 +118,59 @@ abstract final class PlantFixtures {
     imageUrl: const Value(''),
   );
 
-  /// Returns all three fixtures as a list.
-  static List<PlantsCompanion> get all => [sunflower, apple, beet];
+  /// A tomato plant fixture (grow zone 1, watering interval 2).
+  ///
+  /// Mirrors the `Plant("1", "Tomato", "A red vegetable", 1, 2, "")` fixture
+  /// used in the Android `PlantTest`.
+  static final PlantsCompanion tomato = PlantsCompanion.insert(
+    id: 'tomato',
+    name: 'Tomato',
+    description: 'A red vegetable.',
+    growZoneNumber: 1,
+    wateringInterval: const Value(2),
+    imageUrl: const Value(''),
+  );
+
+  /// Returns all four fixtures as a list.
+  static List<PlantsCompanion> get all => [sunflower, apple, beet, tomato];
+
+  /// Returns fixtures for grow zone 9 only.
+  static List<PlantsCompanion> get zone9 => [sunflower];
+
+  /// Returns fixtures for grow zone 5 only.
+  static List<PlantsCompanion> get zone5 => [apple];
+}
+
+/// Pre-built [GardenPlantingsCompanion] fixtures for use in tests.
+///
+/// Mirrors the `testGardenPlanting` in the Android `TestUtils.kt`.
+abstract final class GardenPlantingFixtures {
+  /// A reference date for test fixtures.
+  ///
+  /// Mirrors `testCalendar` set to September 4, 1998 in Android tests.
+  static final DateTime testDate = DateTime(1998, 9, 4);
+
+  /// A garden planting for the sunflower plant.
+  static GardenPlantingsCompanion sunflowerPlanting({
+    DateTime? plantDate,
+    DateTime? lastWateringDate,
+  }) =>
+      newGardenPlanting(
+        plantId: 'sunflower',
+        plantDate: plantDate ?? testDate,
+        lastWateringDate: lastWateringDate ?? testDate,
+      );
+
+  /// A garden planting for the apple plant.
+  static GardenPlantingsCompanion applePlanting({
+    DateTime? plantDate,
+    DateTime? lastWateringDate,
+  }) =>
+      newGardenPlanting(
+        plantId: 'apple',
+        plantDate: plantDate ?? testDate,
+        lastWateringDate: lastWateringDate ?? testDate,
+      );
 }
 
 // ---------------------------------------------------------------------------
