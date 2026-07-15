@@ -1,0 +1,22 @@
+# Flutter-specific files to ignore in the Android project root.
+# These patterns prevent Android tooling from accidentally picking up
+# Flutter-generated artefacts.
+
+# Dart / Flutter build outputs
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+pubspec.lock
+
+# Generated Dart files
+*.g.dart
+*.freezed.dart
+lib/generated/
+
+# Flutter test coverage
+coverage/
+
+# IDE
+.idea/flutter.xml
