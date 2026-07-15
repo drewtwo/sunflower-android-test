@@ -1,0 +1,5 @@
+# Test directory — mirrors the lib/ structure.
+# Subdirectories:
+#   features/ — widget and unit tests for each feature module
+#   data/     — unit tests for repositories, DAOs, and models
+#   core/     — unit tests for utilities and constants

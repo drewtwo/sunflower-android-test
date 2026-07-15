@@ -1,0 +1,2 @@
+# Integration tests — end-to-end tests using flutter_test + integration_test.
+# Run with: flutter test integration_test/
