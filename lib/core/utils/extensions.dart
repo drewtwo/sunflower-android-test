@@ -16,6 +16,14 @@
 ///
 /// Provides convenience helpers on [String], [DateTime], and [int] that
 /// replace common utility patterns from the Android Kotlin codebase.
+///
+/// ## Android → Dart mapping
+/// | Android (Kotlin)                  | Dart extension                      |
+/// |-----------------------------------|-------------------------------------|
+/// | `String.isNotBlank()`             | `String.isNotBlank`                 |
+/// | `Calendar.add(DAY_OF_YEAR, n)`    | `DateTime.addDays(n)`               |
+/// | `calendar1 > calendar2`           | `DateTime.isAfter(other)`           |
+/// | `DateFormat.format(date)`         | `DateTime.toDisplayDate()`          |
 library;
 
 import 'package:intl/intl.dart';
@@ -27,14 +35,20 @@ import 'package:intl/intl.dart';
 /// Extensions on [String] for common formatting and validation helpers.
 extension StringExtensions on String {
   /// Returns `true` if this string is not empty after trimming whitespace.
+  ///
+  /// Equivalent to Kotlin's `String.isNotBlank()`.
   bool get isNotBlank => trim().isNotEmpty;
 
   /// Returns `true` if this string is empty or contains only whitespace.
+  ///
+  /// Equivalent to Kotlin's `String.isBlank()`.
   bool get isBlank => trim().isEmpty;
 
   /// Capitalises the first character of this string and lowercases the rest.
   ///
   /// Returns an empty string if this string is empty.
+  ///
+  /// Example: `"hello world".capitalised` → `"Hello world"`
   String get capitalised {
     if (isEmpty) return this;
     return '${this[0].toUpperCase()}${substring(1).toLowerCase()}';
@@ -42,6 +56,8 @@ extension StringExtensions on String {
 
   /// Truncates this string to [maxLength] characters, appending [ellipsis]
   /// if the string was truncated.
+  ///
+  /// Example: `"Hello, World!".truncate(5)` → `"Hello…"`
   String truncate(int maxLength, {String ellipsis = '…'}) {
     if (length <= maxLength) return this;
     return '${substring(0, maxLength)}$ellipsis';
@@ -71,7 +87,9 @@ extension DateTimeExtensions on DateTime {
   /// Returns a new [DateTime] with [days] added to this instance.
   ///
   /// Equivalent to `Calendar.add(DAY_OF_YEAR, days)` in the Android
-  /// implementation.
+  /// implementation. Used in [PlantExtension.shouldBeWatered].
+  ///
+  /// Example: `DateTime(2024, 1, 1).addDays(7)` → `DateTime(2024, 1, 8)`
   DateTime addDays(int days) => add(Duration(days: days));
 
   /// Returns `true` if this [DateTime] represents today's date.
@@ -83,10 +101,17 @@ extension DateTimeExtensions on DateTime {
   /// Returns the number of whole days between this [DateTime] and [other].
   ///
   /// The result is positive if [other] is in the future relative to this.
+  ///
+  /// Example: `DateTime(2024, 1, 1).daysUntil(DateTime(2024, 1, 8))` → `7`
   int daysUntil(DateTime other) =>
       DateTime(other.year, other.month, other.day)
           .difference(DateTime(year, month, day))
           .inDays;
+
+  /// Returns a copy of this [DateTime] with only the date portion (no time).
+  ///
+  /// Useful for date-only comparisons.
+  DateTime get dateOnly => DateTime(year, month, day);
 }
 
 // ---------------------------------------------------------------------------

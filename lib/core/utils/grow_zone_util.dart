@@ -27,6 +27,23 @@
 /// Negative latitude values are converted to positive with [latitude.abs()].
 ///
 /// For latitude values greater than the maximum (90.0), zone 1 is returned.
+///
+/// ## Zone boundaries
+/// | Latitude range | Zone |
+/// |----------------|------|
+/// | 0.0 – 7.0      | 13   |
+/// | 7.1 – 14.0     | 12   |
+/// | 14.1 – 21.0    | 11   |
+/// | 21.1 – 28.0    | 10   |
+/// | 28.1 – 35.0    | 9    |
+/// | 35.1 – 42.0    | 8    |
+/// | 42.1 – 49.0    | 7    |
+/// | 49.1 – 56.0    | 6    |
+/// | 56.1 – 63.0    | 5    |
+/// | 63.1 – 70.0    | 4    |
+/// | 70.1 – 77.0    | 3    |
+/// | 77.1 – 84.0    | 2    |
+/// | > 84.0         | 1    |
 library;
 
 /// Returns the USDA hardiness zone number for the given [latitude].
@@ -39,6 +56,7 @@ library;
 /// Example:
 /// ```dart
 /// final zone = getZoneForLatitude(37.7749); // San Francisco → 9
+/// final zone2 = getZoneForLatitude(-33.8688); // Sydney → 10
 /// ```
 int getZoneForLatitude(double latitude) {
   final double absLat = latitude.abs();
